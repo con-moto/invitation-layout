@@ -207,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         child: formData.get('child') || '',
         message: formData.get('message') || '',
         event: 'Wedding 19.09.2026',
+        language: 'ru',
       };
 
       const BACKEND_URL = 'https://wedding-yulia-francesco-backend.vercel.app/api/send';
