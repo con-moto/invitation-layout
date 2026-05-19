@@ -76,7 +76,44 @@ document.addEventListener('DOMContentLoaded', () => {
     startPageAnimations();
   }
 
-  // Управление музыкой через кнопку (iOS/macOS Safari friendly)
+  // ---------- РАЗБЛОКИРОВКА АУДИО НА ПЕРВОМ ЖЕСТЕ ----------
+
+  const unlockAudio = () => {
+    if (!bgMusic) return;
+
+    // Тихий запуск, чтобы Safari/iOS разрешили дальше играть звук
+    bgMusic.muted = true;
+    const p = bgMusic.play();
+
+    if (p && typeof p.then === 'function') {
+      p.then(() => {
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
+        bgMusic.muted = false;
+      }).catch(() => {
+        // Если даже тихий запуск не удался, просто ничего не делаем
+      });
+    }
+
+    document.removeEventListener('touchend', unlockAudio);
+    document.removeEventListener('click', unlockAudio);
+    if (intro) {
+      intro.removeEventListener('touchend', unlockAudio);
+      intro.removeEventListener('click', unlockAudio);
+    }
+  };
+
+  // Первый жест по документу
+  document.addEventListener('touchend', unlockAudio, { once: true });
+  document.addEventListener('click', unlockAudio, { once: true });
+
+  // И отдельно по интро, так как оно покрывает всю страницу
+  if (intro) {
+    intro.addEventListener('touchend', unlockAudio, { once: true });
+    intro.addEventListener('click', unlockAudio, { once: true });
+  }
+
+  // ---------- УПРАВЛЕНИЕ МУЗЫКОЙ ЧЕРЕЗ КНОПКУ ----------
 
   const setMusicUi = (isPlaying) => {
     if (!musicToggle) return;
@@ -96,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bgMusic.volume = 1;
 
     try {
-      // Важно: play() вызываем прямо из обработчика жеста пользователя
+      // Здесь play() уже идёт после разблокировки и внутри жеста пользователя
       await bgMusic.play();
       setMusicUi(true);
     } catch (err) {
@@ -125,6 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
     musicToggle.addEventListener('touchend', handleToggle, { passive: true });
     musicToggle.addEventListener('pointerdown', handleToggle);
   }
+
+  // ---------- ТАЙМЕР ОБРАТНОГО ОТСЧЁТА ----------
 
   const targetDate = new Date('2026-09-19T12:00:00+03:00').getTime();
 
@@ -164,6 +203,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateCountdown, 1000);
   }
 
+  // ---------- КОПИРОВАНИЕ РЕКВИЗИТОВ ----------
+
   const paymentBlocks = document.querySelectorAll('.payment-block');
 
   paymentBlocks.forEach((block) => {
@@ -184,6 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // ---------- ПОКАЗ КАЛЕНДАРЯ ----------
 
   const calendarSection = document.querySelector('.section--calendar');
 
@@ -207,6 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (calendarSection) {
     calendarSection.classList.add('is-visible');
   }
+
+  // ---------- ФОРМА ГОСТЯ ----------
 
   const guestForm = document.querySelector('.guest-form');
   if (guestForm) {
