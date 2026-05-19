@@ -1497,6 +1497,61 @@ body {
   transition-delay: 0.6s;
 }
 
+/* Делаем переключатели языков ссылками */
+.hotels-photo-caption.lang-ru,
+.hotels-photo-caption.lang-it {
+  margin-top: 5.2rem;
+  display: inline-flex;
+  gap: 5%;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+
+/* Hover‑состояние */
+.hotels-photo-caption.lang-ru:hover,
+.hotels-photo-caption.lang-it:hover {
+  opacity: 0.8;
+}
+
+/* Псевдоэлемент: прямоугольник по высоте как текст */
+.hotels-photo-caption.lang-ru::before,
+.hotels-photo-caption.lang-it::before {
+  content: "";
+  display: block;
+  width: 40px;          /* ширина прямоугольника, можно изменить */
+  height: 1.2em;        /* примерно высота текста */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Здесь оставляю пустые места под твои картинки */
+.hotels-photo-caption.lang-ru::before {
+  background-image: url('./images/ru.jpg');
+}
+
+.hotels-photo-caption.lang-it::before {
+  background-image: url('./images/it.jpg');
+}
+
+/* Немного адаптации под мобильные */
+@media (max-width: 600px) {
+  .hotels-photo-caption.lang-ru,
+  .hotels-photo-caption.lang-it {
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    gap: 0.6rem;
+  }
+
+  .hotels-photo-caption.lang-ru::before,
+  .hotels-photo-caption.lang-it::before {
+    width: 34px;
+    height: 1.1em;
+  }
+}
+
 .section--hotels.is-visible .hotels-photo-caption {
   opacity: 1;
   transform: translateY(0);
