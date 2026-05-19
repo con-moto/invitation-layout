@@ -2242,7 +2242,7 @@ body {
 
   .hero {
     min-height: 100vh;
-    height: 100vh;
+    height: 110vh;
     max-block-size: none;
     padding: 3vh 7vw 4vh;
     display: flex;
@@ -2521,13 +2521,17 @@ body {
 }
 
 @media (max-width: 390px) {
+  .hero {
+    height: 108vh;
+  }
+
   .hero-date {
     margin-top: 4vh;
   }
 
   .hero-photo {
-    max-width: 120%;        /* чтобы занимать свою половину */
-    width: 120%;
+    max-width: 110%;        /* чтобы занимать свою половину */
+    width: 110%;
   }
 
   .hero-photo-left {
@@ -2538,6 +2542,10 @@ body {
   .hero-photo-right {
     margin-top: -5vh;
     margin-left: -9vw;
+  }
+
+  .hero-names {
+    font-size: 7.5vh;
   }
 }
 
