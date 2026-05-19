@@ -2541,6 +2541,75 @@ body {
   }
 }
 
+.hero-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Кнопки языков в общем стиле кнопок сайта */
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 6px 14px;
+  font-family: Gilroy, system-ui, serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: none;
+  text-decoration: none;
+  color: var(--text-invert);
+  background-color: var(--accent-dark);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 999px; /* можно убрать, если хочешь прямоугольные */
+}
+
+.lang-btn:hover {
+  opacity: 0.7;
+  transform: translateY(-2px);
+}
+
+/* Активный язык: нельзя кликнуть + визуально выделить */
+.lang-btn.is-active {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.9;
+  background-color: var(--accent-dark-soft); /* у тебя есть этот токен [file:39] */
+  transform: none;
+}
+
+/* Можно чуть приглушить hover для неактивных, когда рядом есть активный */
+.lang-switch .lang-btn:not(.is-active):hover {
+  opacity: 0.8;
+}
+
+/* Адаптация под мобильный hero (там hero-title-top уже уменьшается) */
+@media (max-width: 600px) {
+  .hero-top-row {
+    align-items: flex-start;
+  }
+
+  .lang-switch {
+    gap: 0.4rem;
+  }
+
+  .lang-btn {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+}
+
 /* Кнопка музыки в hero */
 .hero-music-btn {
   display: inline-flex;
