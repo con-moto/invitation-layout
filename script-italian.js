@@ -34,8 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const intro = document.querySelector('.intro-screen');
   const introHint = document.querySelector('.intro-tap-hint');
-  const bgMusic = document.getElementById('bg-music');
-  const musicToggle = document.getElementById('music-toggle');
 
   if (intro) {
     const startExperience = async () => {
@@ -76,7 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
     startPageAnimations();
   }
 
-  // ---------- КНОПКА МУЗЫКИ (IT) ----------
+  // ---------- MUSICA (IT) ----------
+
+  const bgMusic = document.getElementById('bg-music');
+  const musicToggle = document.getElementById('music-toggle');
 
   const setMusicUi = (isPlaying) => {
     if (!musicToggle) return;
@@ -89,8 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  const toggleMusic = async (e) => {
-    e.preventDefault();
+  const toggleMusic = async () => {
     if (!bgMusic) return;
 
     try {
@@ -103,13 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setMusicUi(false);
       }
     } catch (err) {
-      console.warn('Music failed:', err);
+      console.error(err);
       setMusicUi(false);
     }
   };
 
   if (musicToggle && bgMusic) {
-    musicToggle.addEventListener('pointerdown', toggleMusic);
+    musicToggle.addEventListener('click', toggleMusic);
   }
 
   // ---------- COUNTDOWN ----------
