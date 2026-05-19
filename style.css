@@ -2541,29 +2541,31 @@ body {
   }
 }
 
-.hero-top-row {
+/* Строка с переключателем языков над заголовком */
+.hero-lang-row {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
+/* Группа кнопок языков */
 .lang-switch {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-/* Кнопки языков в общем стиле кнопок сайта */
+/* Крупные прямоугольные кнопки в стиле остальных */
 .lang-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  padding: 6px 14px;
+  min-width: 70px;
+  padding: 10px 20px;
   font-family: Gilroy, system-ui, serif;
   font-style: italic;
-  font-size: 0.8rem;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
   letter-spacing: 0.18em;
   text-transform: none;
   text-decoration: none;
@@ -2572,7 +2574,9 @@ body {
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: 999px; /* можно убрать, если хочешь прямоугольные */
+  /* без скругления */
+  border-radius: 0;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
 }
 
 .lang-btn:hover {
@@ -2580,33 +2584,26 @@ body {
   transform: translateY(-2px);
 }
 
-/* Активный язык: нельзя кликнуть + визуально выделить */
+/* Активный язык: не кликается, немного другой фон */
 .lang-btn.is-active {
   pointer-events: none;
   cursor: default;
-  opacity: 0.9;
-  background-color: var(--accent-dark-soft); /* у тебя есть этот токен [file:39] */
+  opacity: 0.95;
+  background-color: var(--accent-dark-soft);
   transform: none;
+  box-shadow: none;
 }
 
-/* Можно чуть приглушить hover для неактивных, когда рядом есть активный */
-.lang-switch .lang-btn:not(.is-active):hover {
-  opacity: 0.8;
-}
-
-/* Адаптация под мобильный hero (там hero-title-top уже уменьшается) */
+/* На очень узких экранах можно сделать их чуть меньше */
 @media (max-width: 600px) {
-  .hero-top-row {
-    align-items: flex-start;
-  }
-
-  .lang-switch {
-    gap: 0.4rem;
+  .hero-lang-row {
+    margin-bottom: 1rem;
   }
 
   .lang-btn {
-    padding: 4px 10px;
-    font-size: 0.7rem;
+    min-width: 64px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
   }
 }
 
