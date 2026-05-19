@@ -76,25 +76,54 @@ document.addEventListener('DOMContentLoaded', () => {
     startPageAnimations();
   }
 
-  // Управление музыкой через кнопку
+  // Управление музыкой через кнопку (iOS/macOS Safari friendly)
+
+  const setMusicUi = (isPlaying) => {
+    if (!musicToggle) return;
+    const textEl = musicToggle.querySelector('.music-text');
+    if (isPlaying) {
+      musicToggle.classList.add('is-playing');
+      if (textEl) textEl.textContent = 'Выключить музыку';
+    } else {
+      musicToggle.classList.remove('is-playing');
+      if (textEl) textEl.textContent = 'Включить музыку';
+    }
+  };
+
+  const tryPlayMusic = async () => {
+    if (!bgMusic) return;
+
+    bgMusic.volume = 1;
+
+    try {
+      // Важно: play() вызываем прямо из обработчика жеста пользователя
+      await bgMusic.play();
+      setMusicUi(true);
+    } catch (err) {
+      console.warn('Музыка заблокирована или не воспроизвелась:', err);
+      setMusicUi(false);
+    }
+  };
+
+  const pauseMusic = () => {
+    if (!bgMusic) return;
+    bgMusic.pause();
+    setMusicUi(false);
+  };
+
   if (musicToggle && bgMusic) {
-    musicToggle.addEventListener('click', () => {
+    const handleToggle = () => {
       if (bgMusic.paused) {
-        bgMusic.volume = 1;
-        const promise = bgMusic.play();
-        if (promise && typeof promise.catch === 'function') {
-          promise.catch((err) => {
-            console.warn('Музыка заблокирована:', err);
-          });
-        }
-        musicToggle.classList.add('is-playing');
-        musicToggle.querySelector('.music-text').textContent = 'Выключить музыку';
+        tryPlayMusic();
       } else {
-        bgMusic.pause();
-        musicToggle.classList.remove('is-playing');
-        musicToggle.querySelector('.music-text').textContent = 'Включить музыку';
+        pauseMusic();
       }
-    });
+    };
+
+    // Несколько типов событий для надёжной работы на iOS Safari
+    musicToggle.addEventListener('click', handleToggle);
+    musicToggle.addEventListener('touchend', handleToggle, { passive: true });
+    musicToggle.addEventListener('pointerdown', handleToggle);
   }
 
   const targetDate = new Date('2026-09-19T12:00:00+03:00').getTime();
