@@ -76,81 +76,41 @@ document.addEventListener('DOMContentLoaded', () => {
     startPageAnimations();
   }
 
-const unlockAudio = () => {
-  if (!bgMusic) return;
+  // ---------- КНОПКА МУЗЫКИ (IT) ----------
 
-  bgMusic.muted = true;
-  const p = bgMusic.play();
-
-  if (p && typeof p.then === 'function') {
-    p.then(() => {
-      bgMusic.pause();
-      bgMusic.currentTime = 0;
-      bgMusic.muted = false;
-    }).catch(() => {});
-  }
-
-  document.removeEventListener('touchend', unlockAudio);
-  document.removeEventListener('click', unlockAudio);
-  if (intro) {
-    intro.removeEventListener('touchend', unlockAudio);
-    intro.removeEventListener('click', unlockAudio);
-  }
-};
-
-document.addEventListener('touchend', unlockAudio, { once: true });
-document.addEventListener('click', unlockAudio, { once: true });
-
-if (intro) {
-  intro.addEventListener('touchend', unlockAudio, { once: true });
-  intro.addEventListener('click', unlockAudio, { once: true });
-}
-
-const setMusicUi = (isPlaying) => {
-  if (!musicToggle) return;
-  const textEl = musicToggle.querySelector('.music-text');
-  if (isPlaying) {
-    musicToggle.classList.add('is-playing');
-    if (textEl) textEl.textContent = 'Disattiva la musica';
-  } else {
-    musicToggle.classList.remove('is-playing');
-    if (textEl) textEl.textContent = 'Attiva la musica';
-  }
-};
-
-const tryPlayMusic = async () => {
-  if (!bgMusic) return;
-
-  bgMusic.volume = 1;
-
-  try {
-    await bgMusic.play();
-    setMusicUi(true);
-  } catch (err) {
-    console.warn('Music play blocked or failed:', err);
-    setMusicUi(false);
-  }
-};
-
-const pauseMusic = () => {
-  if (!bgMusic) return;
-  bgMusic.pause();
-  setMusicUi(false);
-};
-
-if (musicToggle && bgMusic) {
-  const handleToggle = () => {
-    if (bgMusic.paused) {
-      tryPlayMusic();
-    } else {
-      pauseMusic();
+  const setMusicUi = (isPlaying) => {
+    if (!musicToggle) return;
+    const textEl = musicToggle.querySelector('.music-text');
+    musicToggle.classList.toggle('is-playing', isPlaying);
+    if (textEl) {
+      textEl.textContent = isPlaying
+        ? 'Disattiva la musica'
+        : 'Attiva la musica';
     }
   };
 
-  musicToggle.addEventListener('click', handleToggle);
-  musicToggle.addEventListener('touchend', handleToggle, { passive: true });
-  musicToggle.addEventListener('pointerdown', handleToggle);
-}
+  const toggleMusic = async (e) => {
+    e.preventDefault();
+    if (!bgMusic) return;
+
+    try {
+      if (bgMusic.paused) {
+        bgMusic.volume = 1;
+        await bgMusic.play();
+        setMusicUi(true);
+      } else {
+        bgMusic.pause();
+        setMusicUi(false);
+      }
+    } catch (err) {
+      console.warn('Music failed:', err);
+      setMusicUi(false);
+    }
+  };
+
+  if (musicToggle && bgMusic) {
+    musicToggle.addEventListener('pointerdown', toggleMusic);
+  }
 
   // ---------- COUNTDOWN ----------
 
@@ -273,7 +233,8 @@ if (musicToggle && bgMusic) {
         language: 'it',
       };
 
-      const BACKEND_URL = 'https://wedding-yulia-francesco-backend.vercel.app/api/send';
+      const BACKEND_URL =
+        'https://wedding-yulia-francesco-backend.vercel.app/api/send';
 
       fetch(BACKEND_URL, {
         method: 'POST',
@@ -285,16 +246,19 @@ if (musicToggle && bgMusic) {
         .then((res) => res.json())
         .then((data) => {
           if (data && data.success) {
-            statusEl.textContent = data.message || 'Grazie! Il modulo è stato inviato.';
+            statusEl.textContent =
+              data.message || 'Grazie! Il modulo è stato inviato.';
             guestForm.reset();
           } else {
             statusEl.textContent =
-              (data && data.message) || "Si è verificato un errore durante l'invio. Riprova più tardi.";
+              (data && data.message) ||
+              "Si è verificato un errore durante l'invio. Riprova più tardi.";
           }
         })
         .catch((err) => {
           console.error(err);
-          statusEl.textContent = "Si è verificato un errore durante l'invio. Riprova più tardi.";
+          statusEl.textContent =
+            "Si è verificato un errore durante l'invio. Riprova più tardi.";
         });
     });
   }

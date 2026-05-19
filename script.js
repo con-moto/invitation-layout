@@ -76,91 +76,40 @@ document.addEventListener('DOMContentLoaded', () => {
     startPageAnimations();
   }
 
-  // ---------- РАЗБЛОКИРОВКА АУДИО НА ПЕРВОМ ЖЕСТЕ ----------
-
-  const unlockAudio = () => {
-    if (!bgMusic) return;
-
-    // Тихий запуск, чтобы Safari/iOS разрешили дальше играть звук
-    bgMusic.muted = true;
-    const p = bgMusic.play();
-
-    if (p && typeof p.then === 'function') {
-      p.then(() => {
-        bgMusic.pause();
-        bgMusic.currentTime = 0;
-        bgMusic.muted = false;
-      }).catch(() => {
-        // Если даже тихий запуск не удался, просто ничего не делаем
-      });
-    }
-
-    document.removeEventListener('touchend', unlockAudio);
-    document.removeEventListener('click', unlockAudio);
-    if (intro) {
-      intro.removeEventListener('touchend', unlockAudio);
-      intro.removeEventListener('click', unlockAudio);
-    }
-  };
-
-  // Первый жест по документу
-  document.addEventListener('touchend', unlockAudio, { once: true });
-  document.addEventListener('click', unlockAudio, { once: true });
-
-  // И отдельно по интро, так как оно покрывает всю страницу
-  if (intro) {
-    intro.addEventListener('touchend', unlockAudio, { once: true });
-    intro.addEventListener('click', unlockAudio, { once: true });
-  }
-
-  // ---------- УПРАВЛЕНИЕ МУЗЫКОЙ ЧЕРЕЗ КНОПКУ ----------
+  // ---------- КНОПКА МУЗЫКИ (RU) ----------
 
   const setMusicUi = (isPlaying) => {
     if (!musicToggle) return;
     const textEl = musicToggle.querySelector('.music-text');
-    if (isPlaying) {
-      musicToggle.classList.add('is-playing');
-      if (textEl) textEl.textContent = 'Выключить музыку';
-    } else {
-      musicToggle.classList.remove('is-playing');
-      if (textEl) textEl.textContent = 'Включить музыку';
+    musicToggle.classList.toggle('is-playing', isPlaying);
+    if (textEl) {
+      textEl.textContent = isPlaying
+        ? 'Выключить музыку'
+        : 'Включить музыку';
     }
   };
 
-  const tryPlayMusic = async () => {
+  const toggleMusic = async (e) => {
+    e.preventDefault();
     if (!bgMusic) return;
 
-    bgMusic.volume = 1;
-
     try {
-      // Здесь play() уже идёт после разблокировки и внутри жеста пользователя
-      await bgMusic.play();
-      setMusicUi(true);
+      if (bgMusic.paused) {
+        bgMusic.volume = 1;
+        await bgMusic.play();
+        setMusicUi(true);
+      } else {
+        bgMusic.pause();
+        setMusicUi(false);
+      }
     } catch (err) {
-      console.warn('Музыка заблокирована или не воспроизвелась:', err);
+      console.warn('Music failed:', err);
       setMusicUi(false);
     }
   };
 
-  const pauseMusic = () => {
-    if (!bgMusic) return;
-    bgMusic.pause();
-    setMusicUi(false);
-  };
-
   if (musicToggle && bgMusic) {
-    const handleToggle = () => {
-      if (bgMusic.paused) {
-        tryPlayMusic();
-      } else {
-        pauseMusic();
-      }
-    };
-
-    // Несколько типов событий для надёжной работы на iOS Safari
-    musicToggle.addEventListener('click', handleToggle);
-    musicToggle.addEventListener('touchend', handleToggle, { passive: true });
-    musicToggle.addEventListener('pointerdown', handleToggle);
+    musicToggle.addEventListener('pointerdown', toggleMusic);
   }
 
   // ---------- ТАЙМЕР ОБРАТНОГО ОТСЧЁТА ----------
@@ -284,7 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
         language: 'ru',
       };
 
-      const BACKEND_URL = 'https://wedding-yulia-francesco-backend.vercel.app/api/send';
+      const BACKEND_URL =
+        'https://wedding-yulia-francesco-backend.vercel.app/api/send';
 
       fetch(BACKEND_URL, {
         method: 'POST',
@@ -296,16 +246,19 @@ document.addEventListener('DOMContentLoaded', () => {
         .then((res) => res.json())
         .then((data) => {
           if (data && data.success) {
-            statusEl.textContent = data.message || 'Спасибо! Форма отправлена.';
+            statusEl.textContent =
+              data.message || 'Спасибо! Форма отправлена.';
             guestForm.reset();
           } else {
             statusEl.textContent =
-              (data && data.message) || 'Произошла ошибка при отправке. Попробуйте позже.';
+              (data && data.message) ||
+              'Произошла ошибка при отправке. Попробуйте позже.';
           }
         })
         .catch((err) => {
           console.error(err);
-          statusEl.textContent = 'Произошла ошибка при отправке. Попробуйте позже.';
+          statusEl.textContent =
+            'Произошла ошибка при отправке. Попробуйте позже.';
         });
     });
   }
