@@ -76,89 +76,81 @@ document.addEventListener('DOMContentLoaded', () => {
     startPageAnimations();
   }
 
-  // ---------- RILASCIO AUDIO AL PRIMO GESTO ----------
+const unlockAudio = () => {
+  if (!bgMusic) return;
 
-  const unlockAudio = () => {
-    if (!bgMusic) return;
+  bgMusic.muted = true;
+  const p = bgMusic.play();
 
-    bgMusic.muted = true;
-    const p = bgMusic.play();
+  if (p && typeof p.then === 'function') {
+    p.then(() => {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+      bgMusic.muted = false;
+    }).catch(() => {});
+  }
 
-    if (p && typeof p.then === 'function') {
-      p.then(() => {
-        bgMusic.pause();
-        bgMusic.currentTime = 0;
-        bgMusic.muted = false;
-      }).catch(() => {
-        // Se anche il play silenzioso fallisce, non facciamo nulla
-      });
-    }
-
-    document.removeEventListener('touchend', unlockAudio);
-    document.removeEventListener('click', unlockAudio);
-    if (intro) {
-      intro.removeEventListener('touchend', unlockAudio);
-      intro.removeEventListener('click', unlockAudio);
-    }
-  };
-
-  // Primo gesto sul documento
-  document.addEventListener('touchend', unlockAudio, { once: true });
-  document.addEventListener('click', unlockAudio, { once: true });
-
-  // E anche sull'intro, che copre tutto lo schermo
+  document.removeEventListener('touchend', unlockAudio);
+  document.removeEventListener('click', unlockAudio);
   if (intro) {
-    intro.addEventListener('touchend', unlockAudio, { once: true });
-    intro.addEventListener('click', unlockAudio, { once: true });
+    intro.removeEventListener('touchend', unlockAudio);
+    intro.removeEventListener('click', unlockAudio);
   }
+};
 
-  // ---------- CONTROLLO MUSICA TRAMITE BOTTONE ----------
+document.addEventListener('touchend', unlockAudio, { once: true });
+document.addEventListener('click', unlockAudio, { once: true });
 
-  const setMusicUi = (isPlaying) => {
-    if (!musicToggle) return;
-    const textEl = musicToggle.querySelector('.music-text');
-    if (isPlaying) {
-      musicToggle.classList.add('is-playing');
-      if (textEl) textEl.textContent = 'Disattiva la musica';
-    } else {
-      musicToggle.classList.remove('is-playing');
-      if (textEl) textEl.textContent = 'Attiva la musica';
-    }
-  };
+if (intro) {
+  intro.addEventListener('touchend', unlockAudio, { once: true });
+  intro.addEventListener('click', unlockAudio, { once: true });
+}
 
-  const tryPlayMusic = async () => {
-    if (!bgMusic) return;
+const setMusicUi = (isPlaying) => {
+  if (!musicToggle) return;
+  const textEl = musicToggle.querySelector('.music-text');
+  if (isPlaying) {
+    musicToggle.classList.add('is-playing');
+    if (textEl) textEl.textContent = 'Disattiva la musica';
+  } else {
+    musicToggle.classList.remove('is-playing');
+    if (textEl) textEl.textContent = 'Attiva la musica';
+  }
+};
 
-    bgMusic.volume = 1;
+const tryPlayMusic = async () => {
+  if (!bgMusic) return;
 
-    try {
-      await bgMusic.play();
-      setMusicUi(true);
-    } catch (err) {
-      console.warn('Music play blocked or failed:', err);
-      setMusicUi(false);
-    }
-  };
+  bgMusic.volume = 1;
 
-  const pauseMusic = () => {
-    if (!bgMusic) return;
-    bgMusic.pause();
+  try {
+    await bgMusic.play();
+    setMusicUi(true);
+  } catch (err) {
+    console.warn('Music play blocked or failed:', err);
     setMusicUi(false);
+  }
+};
+
+const pauseMusic = () => {
+  if (!bgMusic) return;
+  bgMusic.pause();
+  setMusicUi(false);
+};
+
+if (musicToggle && bgMusic) {
+  const handleToggle = () => {
+    if (bgMusic.paused) {
+      tryPlayMusic();
+    } else {
+      pauseMusic();
+    }
   };
 
-  if (musicToggle && bgMusic) {
-    const handleToggle = () => {
-      if (bgMusic.paused) {
-        tryPlayMusic();
-      } else {
-        pauseMusic();
-      }
-    };
-
-    musicToggle.addEventListener('click', handleToggle);
-    musicToggle.addEventListener('touchend', handleToggle, { passive: true });
-    musicToggle.addEventListener('pointerdown', handleToggle);
-  }
+  musicToggle.addEventListener('click', handleToggle);
+  musicToggle.addEventListener('touchend', handleToggle, { passive: true });
+  musicToggle.addEventListener('pointerdown', handleToggle);
+}
 
   // ---------- COUNTDOWN ----------
 

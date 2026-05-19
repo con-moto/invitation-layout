@@ -2549,7 +2549,6 @@ body {
   }
 }
 
-/* Строка с переключателем языков над заголовком */
 .hero-lang-row {
   display: flex;
   justify-content: flex-end;
@@ -2557,61 +2556,61 @@ body {
   margin-bottom: 1.5rem;
 }
 
-/* Группа кнопок языков */
 .lang-switch {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.9rem;
 }
 
-/* Крупные прямоугольные кнопки в стиле остальных */
-.lang-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 70px;
-  padding: 10px 20px;
-  font-family: Gilroy, system-ui, serif;
-  font-style: italic;
-  font-size: clamp(0.85rem, 1.1vw, 1rem);
+/* Базовый размер был ~0.85rem, увеличиваем примерно в 1.5 раза */
+.lang-link {
+  font-family: Gilroy, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.3rem; /* было 0.85rem */
   letter-spacing: 0.18em;
-  text-transform: none;
+  text-transform: uppercase;
   text-decoration: none;
-  color: var(--text-invert);
-  background-color: var(--accent-dark);
-  border: none;
+  color: var(--text-main);
   cursor: pointer;
-  transition: all 0.3s ease;
-  /* без скругления */
-  border-radius: 0;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  transition: color 0.25s ease, opacity 0.25s ease;
 }
 
-.lang-btn:hover {
-  opacity: 0.7;
-  transform: translateY(-2px);
+.lang-link:hover {
+  color: var(--accent-dark);
+  opacity: 0.8;
 }
 
-/* Активный язык: не кликается, немного другой фон */
-.lang-btn.is-active {
+/* Активный язык — серый и некликабельный */
+.lang-link.is-active {
   pointer-events: none;
   cursor: default;
-  opacity: 0.95;
-  background-color: var(--accent-dark-soft);
-  transform: none;
-  box-shadow: none;
+  color: #7a7a7a; /* можно заменить на свой токен серого, если есть */
+  opacity: 1;
 }
 
-/* На очень узких экранах можно сделать их чуть меньше */
+/* Вертикальный разделитель */
+.lang-divider {
+  width: 1px;
+  height: 1.3em;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
 @media (max-width: 600px) {
   .hero-lang-row {
     margin-bottom: 1rem;
   }
 
-  .lang-btn {
-    min-width: 64px;
-    padding: 8px 14px;
-    font-size: 0.8rem;
+  .lang-link {
+    font-size: 1.1rem; /* чуть меньше на мобильных, но всё ещё крупно */
+    letter-spacing: 0.16em;
+  }
+
+  .lang-switch {
+    gap: 0.7rem;
+  }
+
+  .lang-divider {
+    height: 1.1em;
   }
 }
 
